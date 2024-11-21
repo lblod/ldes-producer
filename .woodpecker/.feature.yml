@@ -1,4 +1,4 @@
-psteps:
+steps:
   install:
     image: codeberg.org/woodpecker-plugins/node-pm
     settings:
