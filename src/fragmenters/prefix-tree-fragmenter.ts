@@ -3,7 +3,7 @@ const { literal } = DataFactory;
 import { Node } from '../models/node';
 import { Relation } from '../models/relation';
 import { TREE } from '../utils/namespaces';
-import { generateTreeRelation, getFirstMatch } from '../utils/utils';
+import { debugLog, generateTreeRelation, getFirstMatch } from '../utils/utils';
 import * as RDF from 'rdf-js';
 
 import { Fragmenter, FragmenterArgs } from './fragmenter';
@@ -26,7 +26,7 @@ export default class PrefixTreeFragmenter extends Fragmenter {
     // Check if the view node exists, if not, create one
 
     try {
-      viewNode = await this.config.cache.getNode(viewFile, this.config.baseUrl);
+      viewNode = await this.config.cache.getNode(viewFile);
     } catch (e) {
       viewNode = this.constructNewNode();
       await this.config.cache.addNode(this.getViewFile(), viewNode);
@@ -44,10 +44,7 @@ export default class PrefixTreeFragmenter extends Fragmenter {
       const match = this.relationCache.getLongestMatch(resourceValue);
 
       if (match) {
-        node = await this.config.cache.getNode(
-          match.nodeFile,
-          this.config.baseUrl
-        );
+        node = await this.config.cache.getNode(match.nodeFile);
         currentValue = match.prefix;
       }
       const result = await this._addResource(
@@ -73,16 +70,15 @@ export default class PrefixTreeFragmenter extends Fragmenter {
     depth = 0
   ): Promise<Node> {
     let childMatch = node.relationsMap.get(prefixValue + resourceValue[depth]);
-    console.log(prefixValue + resourceValue[depth]);
-    console.log(node.relationsMap);
+    debugLog(prefixValue + resourceValue[depth]);
+    debugLog(node.relationsMap);
     let curDepth = depth;
     let curPrefixValue = prefixValue;
     let curNode = node;
     while (childMatch && curDepth <= resourceValue.length) {
       // Check if we have to add the resource to a child of the current node, to the current node itself or if we have to split the current node.
       curNode = await this.config.cache.getNode(
-        this.fileForNode(childMatch.targetId),
-        this.config.baseUrl
+        this.fileForNode(childMatch.targetId)
       );
       curDepth += 1;
       curPrefixValue = childMatch.value.value;

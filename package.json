@@ -1,6 +1,6 @@
 {
   "name": "@lblod/ldes-producer",
-  "version": "0.7.0-ALPHA3",
+  "version": "0.7.0-RC2",
   "description": "A time fragmenter library for LDES",
   "main": "./index.js",
   "types": "./index.d.ts",
@@ -32,7 +32,7 @@
   "devDependencies": {
     "@types/jest": "^29.5.14",
     "@types/jsonld": "^1.5.6",
-    "@types/n3": "^1.16.4",
+    "@types/n3": "^1.21.1",
     "@types/rdfjs__data-model": "^2.0.1",
     "@types/rdfjs__namespace": "^2.0.0",
     "@types/uuid": "^8.3.4",

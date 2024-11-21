@@ -1,7 +1,7 @@
 import { Store, DataFactory } from 'n3';
 import { Node, Metadata } from '../models/node';
 import { LDES, RDF_NAMESPACE, TREE } from '../utils/namespaces';
-import { getFirstMatch, pushToReadable } from '../utils/utils';
+import { debugLog, getFirstMatch, pushToReadable } from '../utils/utils';
 import * as RDF from 'rdf-js';
 import path from 'path';
 import { Relation } from '../models/relation';
@@ -10,6 +10,7 @@ import stream from 'stream';
 const { quad } = DataFactory;
 export function convertToStream(node: Node) {
   const quadStream = new stream.Readable({ objectMode: true });
+  debugLog('metadata', node.metadata);
   pushToReadable(
     quadStream,
     ...[
@@ -21,18 +22,26 @@ export function convertToStream(node: Node) {
   if (node.metadata.timestampPath) {
     pushToReadable(
       quadStream,
-      quad(node.metadata.stream, LDES('timestampPath'), node.metadata.timestampPath)
+      quad(
+        node.metadata.stream,
+        LDES('timestampPath'),
+        node.metadata.timestampPath
+      )
     );
   }
   if (node.metadata.versionOfPath) {
     pushToReadable(
       quadStream,
-      quad(node.metadata.stream, LDES('versionOfPath'), node.metadata.versionOfPath),
+      quad(
+        node.metadata.stream,
+        LDES('versionOfPath'),
+        node.metadata.versionOfPath
+      )
     );
   }
   pushToReadable(
     quadStream,
-    quad(node.idNamedNode, RDF_NAMESPACE('type'), TREE('Node')),
+    quad(node.idNamedNode, RDF_NAMESPACE('type'), TREE('Node'))
   );
 
   // Add the different relations to the store
@@ -88,8 +97,19 @@ function extractMetadata(store: Store): Metadata {
     LDES('EventStream')
   )?.subject;
   const view = getFirstMatch(store, null, TREE('view'))?.object;
-  const timestampPath = getFirstMatch(store, stream, LDES('timestampPath'), null)?.object;
-  const versionOfPath = getFirstMatch(store, stream, LDES('versionOfPath'), null)?.object;
+  debugLog('subject', id, 'view', view, 'treeview', TREE('view'), store);
+  const timestampPath = getFirstMatch(
+    store,
+    stream,
+    LDES('timestampPath'),
+    null
+  )?.object;
+  const versionOfPath = getFirstMatch(
+    store,
+    stream,
+    LDES('versionOfPath'),
+    null
+  )?.object;
   if (id && stream && view) {
     return {
       id: parseInt(path.parse(id.value).base),

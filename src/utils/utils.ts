@@ -96,3 +96,9 @@ export function importToStore(
       .once('end', () => resolve())
   );
 }
+
+export function debugLog(...args: unknown[]): void {
+  if (process?.env?.LDES_PRODUCER_LOG_LEVEL === 'debug') {
+    console.log(...args);
+  }
+}

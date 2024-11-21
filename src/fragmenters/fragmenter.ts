@@ -4,6 +4,7 @@ import * as RDF from 'rdf-js';
 import path from 'path';
 import { Member } from '../models/member';
 import { Config } from '../models/config';
+import { debugLog } from '../utils';
 const { namedNode } = DataFactory;
 
 export interface FragmenterArgs {
@@ -43,12 +44,21 @@ export abstract class Fragmenter {
       stream: this.config.streamPrefix(path.basename(this.folder)),
       view: this.getRelationReference(nodeId, 1),
     });
+    if (this.getRelationReference(nodeId, 1) === undefined) {
+      debugLog('node', node);
+    }
     return node;
   }
 
   fileForNode(nodeId: number): string {
     // Determine in which subfolder nodeId should be located
     const subFolder: string = this.determineSubFolder(nodeId);
+    debugLog(
+      'subfolder for node',
+      nodeId,
+      'value is undefined:',
+      subFolder === undefined
+    );
     return path.join(this.folder, subFolder, `${nodeId}.ttl`);
   }
 

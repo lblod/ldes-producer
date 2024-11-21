@@ -58,7 +58,7 @@ try {
 
 ### Configuration
 
-The following environment variables can be configured:
+The following environment variables can be set:
 
 - `BASE_URL` (required): the base-url on which this service is hosted. This ensures the service can resolve relative urls.
 - `DATA_FOLDER`: the parent folder to store the LDES streams in. (default: `./data`)
@@ -69,3 +69,4 @@ The following environment variables can be configured:
 - `FOLDER_DEPTH`: the number of levels the data folder structure should contain. (default: `1`, a flat folder structure)
 - `PAGE_RESOURCES_COUNT`: the number of resources (members) one page should contain. (default: `10`)
 - `SUBFOLDER_NODE_COUNT`: the maximum number of nodes (pages) a subfolder should contain. (default: `10`)
+- `LDES_PRODUCER_LOG_LEVEL`: if set to "debug", will log some debug informations

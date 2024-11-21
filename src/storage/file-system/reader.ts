@@ -2,13 +2,12 @@ import jsstream from 'stream';
 import { Node } from '../../models/node';
 import path from 'path';
 import fs from 'fs';
-// const ttl_read = require('@graphy/content.ttl.read');
 
 import rdfParser from 'rdf-parse';
 
 import rdfSerializer from 'rdf-serialize';
 import { convertToNode } from '../../converters/node-converters';
-import { createStore } from '../../utils/utils';
+import { createStore, debugLog } from '../../utils/utils';
 
 /**
  * Reads the triples in a file, assuming text/turtle.
@@ -32,29 +31,23 @@ export function convert(
   });
 }
 
-function readTriplesStream(
-  file: string,
-  baseIRI = 'http://data.lblod.info'
-): jsstream.Readable {
+function readTriplesStream(file: string, baseIRI = '.'): jsstream.Readable {
   if (!fs.existsSync(file)) {
     throw Error(`File does not exist: ${file}`);
   }
   const fileStream = fs.createReadStream(file);
-  console.log('filestream created');
+  debugLog('filestream created');
   return rdfParser.parse(fileStream, {
     contentType: 'text/turtle',
     baseIRI,
   });
 }
 
-export async function readNode(
-  filePath: string,
-  baseIRI: string
-): Promise<Node> {
+export async function readNode(filePath: string): Promise<Node> {
   try {
-    console.log('reading node at', filePath);
-    const store = await createStore(readTriplesStream(filePath, baseIRI));
-    console.log('store', store);
+    debugLog('reading node at', filePath);
+    const store = await createStore(readTriplesStream(filePath));
+    debugLog('store', store);
     return convertToNode(store);
   } catch (e) {
     throw new Error(`Something went wrong while converting file to node: ${e}`);

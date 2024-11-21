@@ -98,10 +98,7 @@ export default class TimeFragmenter extends Fragmenter {
     let pageFile;
     if (lastPageNr) {
       pageFile = this.fileForNode(lastPageNr);
-      currentNode = await this.config.cache.getNode(
-        pageFile,
-        this.config.baseUrl
-      );
+      currentNode = await this.config.cache.getNode(pageFile);
     } else {
       currentNode = this.constructNewNode();
       pageFile = this.fileForNode(currentNode.metadata.id);
