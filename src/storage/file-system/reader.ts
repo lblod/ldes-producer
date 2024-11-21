@@ -34,7 +34,7 @@ export function convert(
 
 function readTriplesStream(
   file: string,
-  baseIRI = 'http://bittich.be'
+  baseIRI = 'http://data.lblod.info'
 ): jsstream.Readable {
   if (!fs.existsSync(file)) {
     throw Error(`File does not exist: ${file}`);
@@ -47,10 +47,13 @@ function readTriplesStream(
   });
 }
 
-export async function readNode(filePath: string): Promise<Node> {
+export async function readNode(
+  filePath: string,
+  baseIRI: string
+): Promise<Node> {
   try {
     console.log('reading node at', filePath);
-    const store = await createStore(readTriplesStream(filePath));
+    const store = await createStore(readTriplesStream(filePath, baseIRI));
     console.log('store', store);
     return convertToNode(store);
   } catch (e) {

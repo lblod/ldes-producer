@@ -17,14 +17,14 @@ export class Cache {
     this.cacheLimit = cacheLimit;
   }
 
-  async getNode(path: string) {
+  async getNode(path: string, baseIRI: string) {
     let result: Node;
 
     if (this.nodes.has(path)) {
       result = this.nodes.get(path)!;
       this.updateNodeFrequency(path);
     } else {
-      result = await readNode(path);
+      result = await readNode(path, baseIRI);
       this.nodes.set(path, result);
       this.lruRank.set(path, 0);
     }
