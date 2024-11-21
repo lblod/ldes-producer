@@ -5,11 +5,5 @@ steps:
       run:
         - build
       with: npm
-  release:
-    image: plugins/npm
-    settings:
-      token:
-        from_secret: npm_access_token
-      access: public
 when:
   branch: master

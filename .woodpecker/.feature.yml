@@ -1,0 +1,16 @@
+psteps:
+  install:
+    image: codeberg.org/woodpecker-plugins/node-pm
+    settings:
+      run:
+        - build
+      with: npm
+  release:
+    image: plugins/npm
+    settings:
+      token:
+        from_secret: npm_access_token
+      access: public
+when:
+  event: push
+  branch: feature/*
