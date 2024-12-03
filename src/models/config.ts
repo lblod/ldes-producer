@@ -33,7 +33,7 @@ export function getConfigFromEnv(): Config {
     prefixTreeRelationPath:
       process.env.PREFIX_TREE_RELATION_PATH || 'https://example.org/name',
     cacheSize,
-    baseFolder: process.env.DATA_FOLDER || './data',
+    baseFolder: process.env.DATA_FOLDER || '/data',
     baseUrl: process.env.BASE_URL ?? '',
     cache: new Cache(cacheSize),
     updateQueue: new PromiseQueue<Node | null | void>(),
