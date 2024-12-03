@@ -31,10 +31,17 @@ export async function getNode(
   const page = options.nodeId || 1;
   const pagesFolder = path.join(config.baseFolder, options.folder);
 
-  if (page > config.cache.getLastPage(pagesFolder)) {
-    throw error(404, 'Page not found');
+  let lastPage = config.cache.getLastPage(pagesFolder);
+  if (page > lastPage) {
+    // recompute. our cache sometimes is not correct because of a race condition.
+    // Someone is asking us for a page that is further than what we know of, this is odd.
+    // So let's double check.
+    lastPage = await config.cache.getLastPage(pagesFolder, true);
+    if (page > lastPage) {
+      throw error(404, 'Page not found');
+    }
   }
-  if (page < config.cache.getLastPage(pagesFolder)) {
+  if (page < lastPage) {
     fromCache = true;
   }
   const contentType = options.contentType.toLowerCase();
