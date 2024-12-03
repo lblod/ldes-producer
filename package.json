@@ -1,6 +1,6 @@
 {
   "name": "@lblod/ldes-producer",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "description": "A time fragmenter library for LDES",
   "main": "./index.js",
   "types": "./index.d.ts",
