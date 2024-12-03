@@ -70,3 +70,4 @@ The following environment variables can be set:
 - `PAGE_RESOURCES_COUNT`: the number of resources (members) one page should contain. (default: `10`)
 - `SUBFOLDER_NODE_COUNT`: the maximum number of nodes (pages) a subfolder should contain. (default: `10`)
 - `LDES_PRODUCER_LOG_LEVEL`: if set to "debug", will log some debug informations
+- `USE_CORRECT_LDES_NAMESPACE`: if set to true, will use `https://w3id.org/ldes#` namespace instead of `http://w3id.org/ldes#`. This will become the default in a future major release
