@@ -20,12 +20,16 @@ export interface Config {
 
 export function getConfigFromEnv(): Config {
   const cacheSize = parseInt(process.env.CACHE_SIZE || '10');
+  const baseUrl = process.env.BASE_URL;
+  if (!baseUrl?.length) {
+    throw 'base url must be set';
+  }
   return {
     folderDepth: parseInt(process.env.FOLDER_DEPTH || '1'),
     subFolderNodeCount: parseInt(process.env.SUBFOLDER_NODE_COUNT || '10'),
     pageResourcesCount: parseInt(process.env.PAGE_RESOURCES_COUNT || '10'),
     streamPrefix: namespace(
-      process.env.LDES_STREAM_PREFIX || 'http://mu.semte.ch/streams/'
+      process.env.LDES_STREAM_PREFIX || 'http://mu.semte.ch/streams/',
     ),
     timeTreeRelationPath:
       process.env.TIME_TREE_RELATION_PATH ||
@@ -34,7 +38,7 @@ export function getConfigFromEnv(): Config {
       process.env.PREFIX_TREE_RELATION_PATH || 'https://example.org/name',
     cacheSize,
     baseFolder: process.env.DATA_FOLDER || '/data',
-    baseUrl: process.env.BASE_URL ?? '',
+    baseUrl,
     cache: new Cache(cacheSize),
     updateQueue: new PromiseQueue<Node | null | void>(),
   };
