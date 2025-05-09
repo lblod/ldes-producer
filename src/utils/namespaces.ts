@@ -6,7 +6,10 @@ export const TREE = namespace('https://w3id.org/tree#');
 
 export const XML = namespace('http://www.w3.org/2001/XMLSchema#');
 
-export const LDES = namespace('http://w3id.org/ldes#');
+export const LDES =
+  process.env.USE_CORRECT_LDES_NAMESPACE === 'true'
+    ? namespace('https://w3id.org/ldes#')
+    : namespace('http://w3id.org/ldes#');
 
 export const LDES_TIME = namespace(
   'http://mu.semte.ch/services/ldes-time-fragmenter/'
