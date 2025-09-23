@@ -1,10 +1,31 @@
 # LDES Producer library
 
+NPM library that allows maintaining a [Linked Data Event Streams](https://semiceu.github.io/LinkedDataEventStreams/).
+
+It is a fork of [The fragmenter service](https://github.com/redpencilio/fragmentation-producer-service).
+
+It offers two public APIs: `getNode` which lets you retrieve a page from the LDES feed,
+and `addData` which allows you to enrich the LDES feed with data.
+
+As an LDES feed needs many properties to be properly configured, it is possible to use
+environment variables (as described below), so that you only need to call `getConfigFromEnv()` in your code.
+
+An example of usage for retrieving and enriching the LDES feed is proposed below.
+
 ### Usage
 
 `npm install @lblod/ldes-producer`
 
 #### Get Node
+
+GetNode requires a `config`, which tells the library how to communicate with the LDES setup,
+and other properties scoped to the request, such as a `folder` (i.e the LDES scope, for example `mow-registry`) and a `nodeId` (the page you want to retrieve).
+
+You must also provide a `contentType` (`text/turtle` for RDF turtle), and an optional `resource` option.
+
+Below is an example of a rest endpoint (`express`):
+
+`GET http://localhost/{folder}/{nodeId} -H "Content-Type: text/turtle"`
 
 ```ts
 import {
@@ -39,6 +60,19 @@ try {
 ```
 
 #### Add data
+
+AddData requires a `config`, which tells the library how to communicate with the LDES setup,
+and other properties scoped to the request, such as a `folder` (i.e the LDES scope, for example `mow-registry`), a `contentType` for the content type payload, the body (the rdf data), and a type of fragmenter (`time-fragmenter` by default, but `prefix-tree-fragmenter` could also be used).
+
+Below, an example of a rest endpoint (`express`):
+
+```
+POST http://localhost/{folder} -H "Content-Type: text/turtle"--data-binary '@-' <<EOF
+@prefix ex: <http://example.org/> .
+
+ex:subject ex:predicate "object" .
+EOF
+```
 
 ```ts
 try {
