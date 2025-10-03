@@ -23,6 +23,12 @@ export const ACCEPTED_CONTENT_TYPES = [
   'text/turtle',
 ];
 
+export async function getLastPage(config: Config, folder: string): Promise<number> {
+  const pagesFolder = path.join(config.baseFolder, folder);
+  const lastPage = await config.cache.getLastPage(pagesFolder, true);
+  return lastPage;
+}
+
 export async function getNode(
   config: Config,
   options: GetNodeOptions
