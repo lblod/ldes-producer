@@ -1,0 +1,21 @@
+@prefix ldes: <https://w3id.org/ldes#> .
+@prefix tree: <https://w3id.org/tree#> .
+@prefix prov: <http://www.w3.org/ns/prov#> .
+@prefix dct:  <http://purl.org/dc/terms/> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+
+<http://mu.semte.ch/streams/ldes-mow-register>
+    a ldes:EventStream,
+      tree:Collection ;
+    tree:view <./1> ;
+    ldes:timestampPath prov:generatedAtTime ;
+    ldes:versionOfPath dct:isVersionOf ;
+    tree:member <http://mu.semte.ch/services/ldes-time-fragmenter/versioned/1> .
+
+<./1>
+    a tree:Node .
+
+<http://mu.semte.ch/services/ldes-time-fragmenter/versioned/1>
+    <http://x.com/y> <http://x.com/z> ;
+    dct:isVersionOf <http://x.com/x> ;
+    prov:generatedAtTime "2024-11-22T07:12:35.573Z"^^xsd:dateTime .
