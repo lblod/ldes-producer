@@ -12,6 +12,7 @@ export interface FragmenterArgs {
   maxResourcesPerPage: number;
   maxNodeCountPerSubFolder: number;
   folderDepth: number;
+  shape?: string;
 }
 export abstract class Fragmenter {
   folder: string;
@@ -19,6 +20,7 @@ export abstract class Fragmenter {
   abstract relationPath: RDF.NamedNode;
   maxNodeCountPerSubFolder: number;
   folderDepth: number;
+  shape?: string;
   config: Config;
   constructor(
     config: Config,
@@ -27,12 +29,14 @@ export abstract class Fragmenter {
       maxResourcesPerPage,
       maxNodeCountPerSubFolder,
       folderDepth,
+      shape,
     }: FragmenterArgs
   ) {
     this.folder = folder;
     this.maxResourcesPerPage = maxResourcesPerPage;
     this.maxNodeCountPerSubFolder = maxNodeCountPerSubFolder;
     this.folderDepth = folderDepth;
+    this.shape = shape;
     this.config = config;
   }
   constructNewNode(): Node {
@@ -41,8 +45,11 @@ export abstract class Fragmenter {
 
     const node = new Node({
       id: nodeId,
-      stream: this.config.streamPrefix(path.basename(this.folder)),
+      stream: this.config.streamPrefix(
+        path.relative(this.config.baseFolder, this.folder)
+      ),
       view: this.getRelationReference(nodeId, 1),
+      shape: this.shape ? namedNode(this.shape) : undefined,
     });
     if (this.getRelationReference(nodeId, 1) === undefined) {
       debugLog('node', node);

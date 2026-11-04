@@ -39,6 +39,12 @@ export function convertToStream(node: Node) {
       )
     );
   }
+  if (node.metadata.shape) {
+    pushToReadable(
+      quadStream,
+      quad(node.metadata.stream, TREE('shape'), node.metadata.shape)
+    );
+  }
   pushToReadable(
     quadStream,
     quad(node.idNamedNode, RDF_NAMESPACE('type'), TREE('Node'))
@@ -110,6 +116,7 @@ function extractMetadata(store: Store): Metadata {
     LDES('versionOfPath'),
     null
   )?.object;
+  const shape = getFirstMatch(store, stream, TREE('shape'), null)?.object;
   if (id && stream && view) {
     return {
       id: parseInt(path.parse(id.value).base),
@@ -117,6 +124,7 @@ function extractMetadata(store: Store): Metadata {
       view: view as RDF.NamedNode,
       timestampPath: timestampPath as RDF.NamedNode,
       versionOfPath: versionOfPath as RDF.NamedNode,
+      shape: shape as RDF.NamedNode | undefined,
     };
   } else {
     throw Error('Reference to id, stream or view not found');

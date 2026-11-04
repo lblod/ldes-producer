@@ -10,6 +10,7 @@ export type Metadata = {
   view: RDF.NamedNode;
   versionOfPath?: RDF.NamedNode;
   timestampPath?: RDF.NamedNode;
+  shape?: RDF.NamedNode;
 };
 
 export class Node {

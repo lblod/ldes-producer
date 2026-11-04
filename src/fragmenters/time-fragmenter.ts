@@ -30,10 +30,13 @@ export default class TimeFragmenter extends Fragmenter {
 
     const node = new Node({
       id: nodeId,
-      stream: this.config.streamPrefix(path.basename(this.folder)),
+      stream: this.config.streamPrefix(
+        path.relative(this.config.baseFolder, this.folder)
+      ),
       view: this.getRelationReference(nodeId, 1),
       timestampPath: this.relationPath,
       versionOfPath: PURL('isVersionOf'),
+      shape: this.shape ? namedNode(this.shape) : undefined,
     });
     return node;
   }
