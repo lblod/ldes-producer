@@ -1,0 +1,23 @@
+steps:
+  version:
+    image: node:22-alpine
+    commands:
+      - VERSION=$(node -p "require('./package.json').version")
+      - BRANCH=$(echo "${CI_COMMIT_BRANCH##feature/}" | tr -c 'a-zA-Z0-9\n' '-')
+      - npm version --no-git-tag-version "$VERSION-$BRANCH.${CI_PIPELINE_NUMBER}"
+  install:
+    image: codeberg.org/woodpecker-plugins/node-pm
+    settings:
+      run:
+        - build
+      with: npm
+  release:
+    image: plugins/npm
+    settings:
+      token:
+        from_secret: npm_access_token
+      access: public
+      tag: feature-${CI_COMMIT_BRANCH##feature/}
+when:
+  event: push
+  branch: feature/*
