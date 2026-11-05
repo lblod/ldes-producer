@@ -211,7 +211,8 @@ function extractMember(
     const subject = queue.pop();
     if (subject && !handledSubjects.has(subject.value)) {
       handledSubjects.add(subject.value);
-      store.getQuads(subject, null, null, null).forEach((quad) => {
+      const outgoing = store.getQuads(subject, null, null, null);
+      outgoing.forEach((quad) => {
         member.addQuads(quad);
         if (
           (quad.object.termType === 'BlankNode' ||
@@ -221,6 +222,20 @@ function extractMember(
           queue.push(quad.object);
         }
       });
+      // Nested resources can also point to their parent (e.g. a behandeling
+      // has dct:subject its agendapunt, a sh:inversePath in the shape). Follow
+      // incoming links too, but only to resources described on this page, and
+      // never the tree:member link of the stream.
+      if (outgoing.length) {
+        store.getQuads(null, null, subject, null).forEach((quad) => {
+          if (
+            !quad.predicate.equals(TREE('member')) &&
+            !handledSubjects.has(quad.subject.value)
+          ) {
+            queue.push(quad.subject);
+          }
+        });
+      }
     }
   }
   return member;
