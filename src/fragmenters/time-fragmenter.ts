@@ -34,6 +34,7 @@ export default class TimeFragmenter extends Fragmenter {
       view: this.getRelationReference(nodeId, 1),
       timestampPath: this.relationPath,
       versionOfPath: PURL('isVersionOf'),
+      shape: this.shape ? namedNode(this.shape) : undefined,
     });
     return node;
   }

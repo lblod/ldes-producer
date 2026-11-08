@@ -8,6 +8,7 @@ import { convert } from './storage/file-system/reader';
 import extractMembers from './converters/member-converter';
 import { createFragmenter } from './fragmenters/fragmenter-factory';
 import { Fragmenter } from './fragmenters/fragmenter';
+import { Member } from './models/member';
 
 export * from './fragmenters/';
 export * from './models';
@@ -65,11 +66,16 @@ export async function getNode(
 }
 
 export async function addData(config: Config, options: AddDataOptions) {
-  const contentTypes = await rdfParser.getContentTypes();
-  if (!contentTypes.includes(options.contentType)) {
-    throw error(400, 'Content-Type not recognized');
+  let members: Iterable<Member>;
+  if (options.members) {
+    members = options.members;
+  } else {
+    const contentTypes = await rdfParser.getContentTypes();
+    if (!options.contentType || !contentTypes.includes(options.contentType)) {
+      throw error(400, 'Content-Type not recognized');
+    }
+    members = await extractMembers(options.body, options.contentType);
   }
-  const members = await extractMembers(options.body, options.contentType);
   let fragmenter: Fragmenter;
   if (!options.fragmenter || typeof options.fragmenter === 'string') {
     fragmenter = createFragmenter(
@@ -80,6 +86,7 @@ export async function addData(config: Config, options: AddDataOptions) {
         maxResourcesPerPage: config.pageResourcesCount,
         maxNodeCountPerSubFolder: config.subFolderNodeCount,
         folderDepth: config.folderDepth,
+        shape: options.shape,
       }
     );
   } else if (options.fragmenter instanceof Fragmenter) {

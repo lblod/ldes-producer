@@ -90,6 +90,11 @@ try {
 }
 ```
 
+By default every subject in the body becomes a member. To publish members with nested resources, build the `Member`s yourself and pass them as `members` (instead of `body`): each member is then versioned as a whole.
+
+To advertise a SHACL shape on the stream (`tree:shape`), pass `shape` (the IRI of the shape).
+The `ldes:timestampPath` and `ldes:versionOfPath` are already written by the `time-fragmenter` (see `TIME_TREE_RELATION_PATH`).
+
 ### Configuration
 
 The following environment variables can be set:

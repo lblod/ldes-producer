@@ -1,4 +1,5 @@
 import { Fragmenter } from '../fragmenters/fragmenter';
+import { Member } from './member';
 
 export interface GetNodeOptions {
   folder: string;
@@ -7,8 +8,10 @@ export interface GetNodeOptions {
   contentType: string;
 }
 export interface AddDataOptions {
-  contentType: string;
+  contentType?: string;
   folder: string;
-  body: any;
+  body?: any;
+  members?: Member[];
   fragmenter?: string | Fragmenter | null | undefined;
+  shape?: string;
 }

@@ -39,6 +39,12 @@ export function convertToStream(node: Node) {
       )
     );
   }
+  if (node.metadata.shape) {
+    pushToReadable(
+      quadStream,
+      quad(node.metadata.stream, TREE('shape'), node.metadata.shape)
+    );
+  }
   pushToReadable(
     quadStream,
     quad(node.idNamedNode, RDF_NAMESPACE('type'), TREE('Node'))
@@ -110,6 +116,7 @@ function extractMetadata(store: Store): Metadata {
     LDES('versionOfPath'),
     null
   )?.object;
+  const shape = getFirstMatch(store, stream, TREE('shape'), null)?.object;
   if (id && stream && view) {
     return {
       id: parseInt(path.parse(id.value).base),
@@ -117,6 +124,7 @@ function extractMetadata(store: Store): Metadata {
       view: view as RDF.NamedNode,
       timestampPath: timestampPath as RDF.NamedNode,
       versionOfPath: versionOfPath as RDF.NamedNode,
+      shape: shape as RDF.NamedNode | undefined,
     };
   } else {
     throw Error('Reference to id, stream or view not found');
@@ -181,6 +189,7 @@ function extractMembers(store: Store): Member[] {
   const handledSubjects: Set<string> = new Set();
   const members: Member[] = [];
   const memberIds = store.getObjects(null, TREE('member'), null);
+  memberIds.forEach((memberId) => handledSubjects.add(memberId.value));
   memberIds.forEach((memberId) => {
     const member = extractMember(
       memberId as RDF.NamedNode,
@@ -201,9 +210,10 @@ function extractMember(
   const queue: RDF.Quad_Subject[] = [memberId];
   while (queue.length > 0) {
     const subject = queue.pop();
-    if (subject && !handledSubjects.has(subject.value)) {
+    if (subject && (subject.equals(memberId) || !handledSubjects.has(subject.value))) {
       handledSubjects.add(subject.value);
-      store.getQuads(subject, null, null, null).forEach((quad) => {
+      const outgoing = store.getQuads(subject, null, null, null);
+      outgoing.forEach((quad) => {
         member.addQuads(quad);
         if (
           (quad.object.termType === 'BlankNode' ||
@@ -213,6 +223,20 @@ function extractMember(
           queue.push(quad.object);
         }
       });
+      // Nested resources can also point to their parent (e.g. a behandeling
+      // has dct:subject its agendapunt, a sh:inversePath in the shape). Follow
+      // incoming links too, but only to resources described on this page, and
+      // never the tree:member link of the stream.
+      if (outgoing.length) {
+        store.getQuads(null, null, subject, null).forEach((quad) => {
+          if (
+            !quad.predicate.equals(TREE('member')) &&
+            !handledSubjects.has(quad.subject.value)
+          ) {
+            queue.push(quad.subject);
+          }
+        });
+      }
     }
   }
   return member;
