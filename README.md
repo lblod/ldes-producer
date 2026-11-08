@@ -95,8 +95,6 @@ By default every subject in the body becomes a member. To publish members with n
 To advertise a SHACL shape on the stream (`tree:shape`), pass `shape` (the IRI of the shape).
 The `ldes:timestampPath` and `ldes:versionOfPath` are already written by the `time-fragmenter` (see `TIME_TREE_RELATION_PATH`).
 
-The IRI of a stream is `LDES_STREAM_PREFIX` followed by the `folder` (relative to `DATA_FOLDER`).
-
 ### Configuration
 
 The following environment variables can be set:
