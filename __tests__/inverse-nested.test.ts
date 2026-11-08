@@ -34,4 +34,23 @@ describe('convertToNode', () => {
       'http://ex.org/zitting/2',
     ]);
   });
+
+  it('never pulls a member into another member', () => {
+    const versions = `
+<http://ex.org/stream> <https://w3id.org/tree#member> <http://ex.org/zitting/1/v1>, <http://ex.org/zitting/1/v2> .
+<http://ex.org/zitting/1/v1> <http://data.vlaanderen.be/ns/besluit#behandelt> <http://ex.org/agendapunt/1> .
+<http://ex.org/zitting/1/v2> <http://data.vlaanderen.be/ns/besluit#behandelt> <http://ex.org/agendapunt/1> .
+<http://ex.org/agendapunt/1> <http://purl.org/dc/terms/title> "Budget" .
+<http://ex.org/stream/1> a <https://w3id.org/tree#Node> .
+<http://ex.org/stream> <https://w3id.org/tree#view> <http://ex.org/stream/1> .
+`;
+    const node = convertToNode(new Store(new Parser().parse(versions)));
+    const [first, second] = node.members;
+    expect(first.data.getSubjects(null, null, null).map((s) => s.value)).not.toContain(
+      'http://ex.org/zitting/1/v2'
+    );
+    expect(second.data.getSubjects(null, null, null).map((s) => s.value)).toEqual([
+      'http://ex.org/zitting/1/v2',
+    ]);
+  });
 });

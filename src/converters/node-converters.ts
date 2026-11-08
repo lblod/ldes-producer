@@ -189,6 +189,7 @@ function extractMembers(store: Store): Member[] {
   const handledSubjects: Set<string> = new Set();
   const members: Member[] = [];
   const memberIds = store.getObjects(null, TREE('member'), null);
+  memberIds.forEach((memberId) => handledSubjects.add(memberId.value));
   memberIds.forEach((memberId) => {
     const member = extractMember(
       memberId as RDF.NamedNode,
@@ -209,7 +210,7 @@ function extractMember(
   const queue: RDF.Quad_Subject[] = [memberId];
   while (queue.length > 0) {
     const subject = queue.pop();
-    if (subject && !handledSubjects.has(subject.value)) {
+    if (subject && (subject.equals(memberId) || !handledSubjects.has(subject.value))) {
       handledSubjects.add(subject.value);
       const outgoing = store.getQuads(subject, null, null, null);
       outgoing.forEach((quad) => {
